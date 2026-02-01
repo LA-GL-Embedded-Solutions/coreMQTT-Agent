@@ -699,7 +699,8 @@ static void mqttEventCallback( MQTTContext_t * pMqttContext,
                 }
                 else
                 {
-                    LogError( ( "No operation found matching packet id %u.\n", packetIdentifier ) );
+                    /* Late ACK for an operation that already timed out - this is harmless. */
+                    LogInfo( ( "Received ACK for unknown packet id %u (likely late ACK after timeout).\n", packetIdentifier ) );
                 }
 
                 break;
