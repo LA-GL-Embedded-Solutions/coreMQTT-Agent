@@ -45,6 +45,7 @@
 /* MQTT agent include. */
 #include "core_mqtt_agent.h"
 #include "core_mqtt_agent_command_functions.h"
+#include "iwdg.h"
 
 /* MQTT Agent default logging configuration include. */
 #include "core_mqtt_agent_default_logging.h"
@@ -588,6 +589,7 @@ static MQTTStatus_t processCommand( MQTTAgentContext_t * pMqttAgentContext,
     {
         do
         {
+            vPetWatchdog();
             pMqttAgentContext->packetReceivedInLoop = false;
 
             if( ( ( operationStatus == MQTTSuccess ) || ( operationStatus == MQTTNeedMoreBytes ) ) &&
@@ -1056,6 +1058,8 @@ MQTTStatus_t MQTTAgent_CommandLoop( MQTTAgentContext_t * pMqttAgentContext )
     /* Loop until an error or we receive a terminate command. */
     while( operationStatus == MQTTSuccess )
     {
+        vPetWatchdog();
+
         /* Wait for the next command, if any. */
         pCommand = NULL;
         ( void ) pMqttAgentContext->agentInterface.recv(
