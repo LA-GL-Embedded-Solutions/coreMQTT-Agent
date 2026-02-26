@@ -606,6 +606,17 @@ static MQTTStatus_t processCommand( MQTTAgentContext_t * pMqttAgentContext,
         operationStatus = MQTTSuccess;
     }
 
+    /* A PUBLISH returning MQTTBadParameter (e.g. outgoingPublishRecords
+     * cleared by MQTT_Connect race during reconnect) is non-fatal.  The
+     * caller's callback was already invoked with the error above. */
+    if( ( pCommand != NULL ) &&
+        ( pCommand->commandType == PUBLISH ) &&
+        ( operationStatus == MQTTBadParameter ) )
+    {
+        LogWarn( ( "PUBLISH returned MQTTBadParameter — non-fatal, continuing command loop." ) );
+        operationStatus = MQTTSuccess;
+    }
+
     /* Set the flag to break from the command loop. */
     *pEndLoop = ( commandOutParams.endLoop || ( operationStatus != MQTTSuccess ) );
 
